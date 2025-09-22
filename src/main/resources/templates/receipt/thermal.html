@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thermal Receipt</title>
+    <style>
+        body { 
+            font-family: 'Courier New', monospace; 
+            width: 80mm; /* Thermal printer width */
+            margin: 0 auto;
+            padding: 5mm;
+            font-size: 12px;
+        }
+        .text-center { text-align: center; }
+        .border-bottom { border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 5px; }
+        .item-row { display: flex; justify-content: space-between; }
+        .qty { width: 30px; text-align: center; }
+        .price { width: 60px; text-align: right; }
+        .total { font-weight: bold; }
+        .qr-section { margin: 10px 0; text-align: center; }
+        .qr-section img { width: 120px; height: 120px; }
+        .footer { font-size: 10px; margin-top: 10px; }
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="text-center">
+        <h3>Ease2Bill Store</h3>
+        <p>123 Main Street, City</p>
+        <p>Phone: +91 98765 43210</p>
+        <div class="border-bottom"></div>
+        <p>Bill No: <span th:text="${invoice.invoiceId}"></span></p>
+        <p>Date: <span th:text="${#temporals.format(invoice.invoiceDate, 'dd-MM-yyyy')}"></span></p>
+        <p>Time: <span th:text="${#temporals.format(invoice.invoiceTime, 'HH:mm')}"></span></p>
+        <div class="border-bottom"></div>
+    </div>
+
+    <div th:each="item : ${invoice.invoiceItems}">
+        <div class="item-row">
+            <div>
+                <span th:text="${item.product.prodName}"></span><br/>
+                <span class="qty" th:text="${item.quantity}"></span> x ₹<span class="price" th:text="${item.price}"></span>
+            </div>
+            <div>₹<span th:text="${item.subtotal}"></span></div>
+        </div>
+    </div>
+
+    <div class="border-bottom"></div>
+    <div class="item-row">
+        <div>TOTAL</div>
+        <div class="total">₹<span th:text="${invoice.totalAmt}"></span></div>
+    </div>
+    <div class="item-row">
+        <div>YOU SAVED</div>
+        <div class="total">₹<span th:text="${invoice.totalSaved}"></span></div>
+    </div>
+
+    <div class="qr-section">
+        <img th:if="${qrBase64}" th:src="@{'data:image/png;base64,' + ${qrBase64}}" alt="Pay Now"/>
+        <p>Scan to Pay ₹<span th:text="${invoice.totalAmt}"></span></p>
+    </div>
+
+    <div class="footer text-center">
+        <p>Thank You! Visit Again</p>
+        <p class="no-print">
+            <button onclick="window.print()">Print Receipt</button>
+        </p>
+    </div>
+</body>
+</html>

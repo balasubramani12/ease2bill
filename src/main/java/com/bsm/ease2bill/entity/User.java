@@ -10,14 +10,16 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id") // ✅ FIXED: matches DB column "user_id" (was "id")
+    @Column(name = "user_id")
     private Long id;
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "role")
-    private String role;
+    // ✅ FIXED: Map ENUM column correctly
+    @Column(name = "role", columnDefinition = "ENUM('ADMIN', 'USER')")
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
     @Column(name = "username")
     private String username;
@@ -25,13 +27,12 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    // One to Many Join with Invoice Entity
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // ✅ FIXED: Simplified cascade + added orphanRemoval
-    private List<Invoice> invoices = new ArrayList<>(); // ✅ FIXED: Initialize to avoid NPE
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Invoice> invoices = new ArrayList<>();
 
     public User() {}
 
-    public User(String name, String role, String username, String password) {
+    public User(String name, Role role, String username, String password) {
         this.name = name;
         this.role = role;
         this.username = username;
@@ -45,8 +46,8 @@ public class User {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public Role getRole() { return role; } // ✅ Return enum
+    public void setRole(Role role) { this.role = role; } // ✅ Accept enum
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -65,5 +66,10 @@ public class User {
     @Override
     public String toString() {
         return "User [id=" + id + ", name=" + name + ", role=" + role + ", username=" + username + "]";
+    }
+
+    // ✅ Define Role enum INSIDE User class (or as separate class)
+    public enum Role {
+        ADMIN, USER
     }
 }

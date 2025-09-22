@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:if="${product.prodId == null}">New Product</title>
+    <title th:if="${product.prodId != null}">Edit Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white" th:if="${product.prodId == null}">
+                        <h4>Add New Product</h4>
+                    </div>
+                    <div class="card-header bg-warning text-dark" th:if="${product.prodId != null}">
+                        <h4>Edit Product</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="${product.prodId == null} ? @{/products/new} : @{/products/edit/{id}(id=${product.prodId})}" 
+                              th:object="${product}" method="post">
+                            
+                            <!-- Validation Errors -->
+                            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                                <p th:each="err : ${#fields.errors('*')}" th:text="${err}"></p>
+                            </div>
+
+                            <input type="hidden" th:if="${product.prodId != null}" th:field="*{prodId}" />
+
+                            <div class="mb-3">
+                                <label for="prodName" class="form-label">Product Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="prodName" th:field="*{name}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="prodCat" class="form-label">Category</label>
+                                <input type="text" class="form-control" id="prodCat" th:field="*{prodCat}">
+                                <div class="text-danger" th:if="${#fields.hasErrors('prodCat')}" th:errors="*{prodCat}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="prodSku" class="form-label">UPC/SKU (Barcode)</label>
+                                <input type="text" class="form-control" id="prodSku" th:field="*{prodSku}">
+                                <div class="text-danger" th:if="${#fields.hasErrors('prodSku')}" th:errors="*{prodSku}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="prodDesc" class="form-label">Description</label>
+                                <textarea class="form-control" id="prodDesc" th:field="*{prodDesc}" rows="3"></textarea>
+                                <div class="text-danger" th:if="${#fields.hasErrors('prodDesc')}" th:errors="*{prodDesc}"></div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="prodMrp" class="form-label">MRP (₹) <span class="text-danger">*</span></label>
+                                        <input type="number" step="0.01" class="form-control" id="prodMrp" th:field="*{prodMrp}" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('prodMrp')}" th:errors="*{prodMrp}"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="prodSellingPrice" class="form-label">Selling Price (₹) <span class="text-danger">*</span></label>
+                                        <input type="number" step="0.01" class="form-control" id="prodSellingPrice" th:field="*{prodSellingPrice}" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('prodSellingPrice')}" th:errors="*{prodSellingPrice}"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="stock" class="form-label">Current Stock</label>
+                                        <input type="number" step="0.001" class="form-control" id="stock" th:field="*{stock}">
+                                        <div class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="openingStock" class="form-label">Opening Stock</label>
+                                        <input type="number" step="0.001" class="form-control" id="openingStock" th:field="*{openingStock}">
+                                        <div class="text-danger" th:if="${#fields.hasErrors('openingStock')}" th:errors="*{openingStock}"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="prodUnits" class="form-label">Units (e.g., pcs, kg, ltr)</label>
+                                <input type="text" class="form-control" id="prodUnits" th:field="*{prodUnits}" value="pcs">
+                                <div class="text-danger" th:if="${#fields.hasErrors('prodUnits')}" th:errors="*{prodUnits}"></div>
+                            </div>
+
+                            <button th:if="${product.prodId == null}" type="submit" class="btn btn-primary w-100">Create Product</button>
+                            <button th:if="${product.prodId != null}" type="submit" class="btn btn-warning w-100">Update Product</button>
+                            <a href="/products" class="btn btn-secondary w-100 mt-2">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

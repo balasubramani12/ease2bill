@@ -15,7 +15,7 @@ public class Product {
     private Long prodId;
 
     @Column(name = "name", nullable = false)
-    private String prodName;
+    private String name;
 
     @Column(name = "category")
     private String prodCat;
@@ -35,11 +35,11 @@ public class Product {
     @Column(name = "units")
     private String prodUnits;
 
-    @Column(name = "stock")
-    private BigDecimal stock; // ✅ FIXED: double → BigDecimal
+    @Column(name = "stock", precision = 10, scale = 3)
+    private BigDecimal stock = BigDecimal.ZERO;
 
-    @Column(name = "opening_stock")
-    private BigDecimal openingStock;  // ✅ FIXED: double → BigDecimal
+    @Column(name = "opening_stock", precision = 10, scale = 3)
+    private BigDecimal openingStock = BigDecimal.ZERO;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true) // ✅ FIXED: Simplified cascade + orphanRemoval
     private List<InvoiceItem> invoiceItems = new ArrayList<>(); // ✅ FIXED: Initialize list
@@ -49,7 +49,7 @@ public class Product {
     // ✅ FIXED: Constructor uses BigDecimal
     public Product(String prodName, String prodCat, BigDecimal prodMrp, BigDecimal prodSellingPrice,
                    String prodDesc, String prodSku, String prodUnits, BigDecimal stock, BigDecimal openingStock) {
-        this.prodName = prodName;
+        this.name = prodName;
         this.prodCat = prodCat;
         this.prodMrp = prodMrp;
         this.prodSellingPrice = prodSellingPrice;
@@ -64,8 +64,8 @@ public class Product {
     public Long getProdId() { return prodId; }
     public void setProdId(Long prodId) { this.prodId = prodId; }
 
-    public String getProdName() { return prodName; }
-    public void setProdName(String prodName) { this.prodName = prodName; }
+    public String getName() { return name; }
+    public void setName(String prodName) { this.name = prodName; }
 
     public String getProdCat() { return prodCat; }
     public void setProdCat(String prodCat) { this.prodCat = prodCat; }
@@ -103,7 +103,7 @@ public class Product {
     public String toString() {
         return "Product{" +
                 "prodId=" + prodId +
-                ", prodName='" + prodName + '\'' +
+                ", prodName='" + name + '\'' +
                 ", prodCat='" + prodCat + '\'' +
                 ", prodMrp=" + prodMrp +
                 ", prodSellingPrice=" + prodSellingPrice +

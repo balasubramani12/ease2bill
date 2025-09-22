@@ -36,17 +36,22 @@ public class Invoice {
     @Column(name = "total_save") // ✅ FIXED: matches DB column "total_save"
     private BigDecimal totalSaved; // ✅ FIXED: double → BigDecimal
 
-    @Column(name = "payment_status")
-    private String paymentStatus;
+    @Column(name = "payment_status", columnDefinition = "ENUM('PAID', 'UNPAID', 'PARTIAL')")
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus = PaymentStatus.UNPAID;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true) // ✅ FIXED: Simplified + orphanRemoval
     private List<InvoiceItem> invoiceItems = new ArrayList<>(); // ✅ FIXED: Initialize list
 
     public Invoice() {}
 
+    public enum PaymentStatus {
+    PAID, UNPAID, PARTIAL
+    }
+
     // ✅ FIXED: Constructor uses BigDecimal
     public Invoice(LocalDate invoiceDate, LocalTime invoiceTime,
-                   BigDecimal totalAmt, BigDecimal totalSaved, String paymentStatus) {
+                   BigDecimal totalAmt, BigDecimal totalSaved, PaymentStatus paymentStatus) {
         this.invoiceDate = invoiceDate;
         this.invoiceTime = invoiceTime;
         this.totalAmt = totalAmt;
@@ -76,8 +81,8 @@ public class Invoice {
     public BigDecimal getTotalSaved() { return totalSaved; } // ✅ FIXED: double → BigDecimal
     public void setTotalSaved(BigDecimal totalSaved) { this.totalSaved = totalSaved; }
 
-    public String getPaymentStatus() { return paymentStatus; }
-    public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
+    public PaymentStatus getPaymentStatus() { return paymentStatus; }
+    public void setPaymentStatus(PaymentStatus paymentStatus) { this.paymentStatus = paymentStatus; }
 
     public List<InvoiceItem> getInvoiceItems() { return invoiceItems; }
     public void setInvoiceItems(List<InvoiceItem> invoiceItems) { this.invoiceItems = invoiceItems; }
